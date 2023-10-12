@@ -45,3 +45,14 @@ def alignImages(images):
     return alignedImages
 
 
+def stack_focuses(images):
+    images = alignImages(images)
+
+    laplacians = list()
+    blur_size = 5
+    kernel_size = 5
+
+    for image in images:
+        greyed = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        gaussian = cv.GaussianBlur(image, (5, 5), 0)
+        laplace = cv.Laplacian()
