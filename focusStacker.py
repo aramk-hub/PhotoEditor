@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import os
 
 def alignImages(images):
 
@@ -74,4 +75,11 @@ def stack_focuses(images):
 
     cv.imshow('out', out)
     cv.imwrite('./Outputs/focused.png', out)
+
+if __name__ == "__main__":
+    images = list()
+    for image in os.listdir("./Focusing"):
+        images.append(cv.imread("./Focusing/{}".format(image)))
+    
+    stack_focuses(images)
         
