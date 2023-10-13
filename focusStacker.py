@@ -44,6 +44,12 @@ def alignImages(images):
 
     return alignedImages
 
+# Find Laplacian gradient to find the in-focus parts of the image
+def laplace(image):
+    bs = 5
+    ks = 5
+    return cv.Laplacian(cv.Gaussian(image, (bs, bs), 0), cv.CV_64F, ksize=ks)
+
 
 def stack_focuses(images):
     images = alignImages(images)
@@ -54,5 +60,18 @@ def stack_focuses(images):
 
     for image in images:
         greyed = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        gaussian = cv.GaussianBlur(image, (5, 5), 0)
-        laplace = cv.Laplacian()
+        laplacians.append(laplace(greyed))
+
+    laplacians = np.asarray(laplacians)
+    out = np.zeros(shape=images[0].shape, dtype=images[0].dtype)
+
+    # Iterate through every pixel, setting the output pixel to the px with largest gradient
+    for x in range(images[0].shape[0]):
+        for y in range(images[0].shape[1]):
+            gradients = [image[x,y] for image in laplacians]
+            out_color = images[gradients.index(max(gradients))][x,y]
+            out[x,y] = out_color
+
+    cv.imshow('out', out)
+    cv.imwrite('./Outputs/focused.png', out)
+        
