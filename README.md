@@ -4,7 +4,7 @@
 This photo editor has three different editing options as of now, with more to come. The options are denoising, HDR imaging via exposure stacking, and focus stacking. As of now, the editor uses three different scripts, but the goal is to create a small application for learning purposes. All output images will be placed in the `./Outputs` directory.
 
 ### Denoising
-The editor can denoise an image in the same way as the image below with the noisy image on the left and denoised on the right: 
+The editor can denoise an image in the same way as the image, with a noisy image on the left and denoised on the right: 
 <img src="noisy_image.png" alt="drawing" width="300"></img>
 
 To do so, add an image to the `./Denoise` directory, and run the program with `python denoiser.py` or `python3 denoiser.py`. 
