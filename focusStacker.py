@@ -5,7 +5,7 @@ import os
 def alignImages(images):
 
     alignedImages = list()
-    detector = cv.xfeatures2d.SIFT_create()
+    detector = cv.SIFT_create()
 
     # Appened reference image, detect and compute descriptors
     alignedImages.append(images[0])
@@ -19,7 +19,7 @@ def alignImages(images):
 
         bf = cv.BFMatcher()
         # Match & ratio test
-        matches = cv.knnMatch(kpi_desc, ref_desc, k=2)
+        matches = bf.knnMatch(kpi_desc, ref_desc, k=2)
         good_images = list()
         for m,n in matches:
             if m.distance < 0.75 * n.distance:
@@ -28,12 +28,12 @@ def alignImages(images):
         matches = good_images
 
         # Find Homography
-        points1 = np.zeros((len(matches), 2), dtype=np.float32)
-        points2 = np.zeros((len(matches), 2), dtype=np.float32)
+        points1 = np.zeros((len(matches), 1, 2), dtype=np.float32)
+        points2 = np.zeros((len(matches), 1, 2), dtype=np.float32)
 
-        for i, match in enumerate(matches):
-            points1[i, :] = ref_kp[match.queryIdx].pt
-            points2[i, :] = kpi[match.trainIdx].pt
+        for i in range(len(matches)):
+            points2[i] = ref_kp[matches[i].queryIdx].pt
+            points1[i] = kpi[matches[i].trainIdx].pt
         
         hom, mask = cv.findHomography(points1, points2, cv.RANSAC)
 
