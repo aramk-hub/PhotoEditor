@@ -30,12 +30,13 @@ def alignImages(images):
         # Find Homography
         points1 = np.zeros((len(matches), 1, 2), dtype=np.float32)
         points2 = np.zeros((len(matches), 1, 2), dtype=np.float32)
-
-        for i in range(len(matches)):
-            points2[i] = ref_kp[matches[i].queryIdx].pt
-            points1[i] = kpi[matches[i].trainIdx].pt
         
-        hom, mask = cv.findHomography(points1, points2, cv.RANSAC)
+
+        for j in range(len(matches)):
+            points2[j] = ref_kp[matches[j].trainIdx].pt
+            points1[j] = kpi[matches[j].queryIdx].pt
+        
+        hom, mask = cv.findHomography(points1, points2, cv.RANSAC, ransacReprojThreshold=2.0)
 
         result = cv.warpPerspective(images[i], hom, (images[i].shape[1], images[i].shape[0]), flags=cv.INTER_LINEAR)
 
@@ -49,31 +50,31 @@ def alignImages(images):
 def laplace(image):
     bs = 5
     ks = 5
-    return cv.Laplacian(cv.Gaussian(image, (bs, bs), 0), cv.CV_64F, ksize=ks)
+    return cv.Laplacian(cv.GaussianBlur(image, (bs, bs), 0), cv.CV_64F, ksize=ks)
 
 
 def stack_focuses(images):
     images = alignImages(images)
 
     laplacians = list()
-    blur_size = 5
-    kernel_size = 5
 
     for image in images:
         greyed = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         laplacians.append(laplace(greyed))
 
-    laplacians = np.asarray(laplacians)
+    laplacian = np.asarray(laplacians)
     out = np.zeros(shape=images[0].shape, dtype=images[0].dtype)
+    abs_laps = np.absolute(laplacians)
 
-    # Iterate through every pixel, setting the output pixel to the px with largest gradient
-    for x in range(images[0].shape[0]):
-        for y in range(images[0].shape[1]):
-            gradients = [image[x,y] for image in laplacians]
-            out_color = images[gradients.index(max(gradients))][x,y]
-            out[x,y] = out_color
+    # # Iterate through every pixel, setting the output pixel to the px with largest gradient
+    for y in range(images[0].shape[0]):
+        for x in range(images[0].shape[1]):
+            gradients = [image[y,x] for image in abs_laps]
+            out_color = images[gradients.index(max(gradients))][y,x]
+            out[y,x] = out_color
 
-    cv.imshow('out', out)
+
+    # cv.imshow('out', output)
     cv.imwrite('./Outputs/focused.png', out)
 
 if __name__ == "__main__":
