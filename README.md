@@ -12,7 +12,7 @@ To do so, add an image to the `./Denoise` directory, and run the program with `p
 ### HDR Imaging 
 HDR imaging allows for a brighter pictures with more contrast and realistic lighting, rather than the standard dynamic range most cameras take photos with. To accomplish this, computers need several photos, from exposures above and below that of the reference image. Once we have this, we can "stack" the images together. To use this section, upload your pictures to the `./HDR` directory and run the script with `python mergeExposure.py` or `python3 mergeExposure.py`. 
 
-### Focus Stacking - COMING SOON
+### Focus Stacking
 Focus stacking allows for unique photo composition that we otherwise find difficult to accomplish without the help of computer vision. Essentially, we can use multiple photos of a scene with different focus points, and "stack" them again in order to create a photo with multiple parts in focus. To use this option, upload your images to the `./FocusStacking` directory and run the script with `python focusStacker.py` or `python3 focusStacker.py`. 
 
 ### Remarks
